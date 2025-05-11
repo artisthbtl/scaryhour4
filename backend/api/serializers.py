@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Topic, Material, UserMaterial
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,3 +11,45 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+    
+class TopicSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(validators=[])
+
+    def validate_name(self, value):
+        if Topic.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("This material already exists (case-insensitive).")
+        return value
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'name']
+
+class MaterialSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(validators=[])
+
+    def validate_name(self, value):
+        if Material.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("This material already exists (case-insensitive).")
+        return value
+
+    topic = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Topic.objects.all()
+    )
+
+    class Meta:
+        model = Material
+        fields = ['id', 'name', 'description', 'link', 'topic', 'created_at']
+    
+class UserMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMaterial
+        fields = ['id', 'material', 'done', 'completed_at']
+        read_only_fields = ['completed_at']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        material = validated_data['material']
+
+        instance, created = UserMaterial.objects.get_or_create(user=user, material=material)
+        return instance
