@@ -16,7 +16,7 @@ function ProtectedRoute({ children }) {
             }
         };
         checkAuth();
-    }, []);
+    });
 
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);

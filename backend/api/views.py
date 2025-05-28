@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .serializers import *
 from .models import Material, Topic
+from rest_framework.response import Response
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -14,6 +15,21 @@ class CreateMaterialView(generics.ListCreateAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     permission_classes = [IsAdminUser]
+
+class DeleteMaterialView(generics.DestroyAPIView):
+    queryset = Material.objects.all()
+    permission_classes = [IsAdminUser]  # or customize as needed
+
+    def destroy(self, request, *args, **kwargs):
+        material = self.get_object()
+        topic = material.topic
+        self.perform_destroy(material)
+
+        # Check if topic is now empty
+        if not topic.materials.exists():
+            topic.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CreateTopicView(generics.ListCreateAPIView):
     queryset = Topic.objects.all()
@@ -29,3 +45,15 @@ class UserMaterialView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class TopicMaterialView(generics.ListAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = TopicMaterialSerializer
+    permission_classes = [AllowAny]
+
+# class CurrentUserView(generics.ListAPIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         serializer = UserSerializer(request.user) # Use your existing UserSerializer
+#         return Response(serializer.data)

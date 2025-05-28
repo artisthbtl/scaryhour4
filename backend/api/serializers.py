@@ -53,3 +53,10 @@ class UserMaterialSerializer(serializers.ModelSerializer):
 
         instance, created = UserMaterial.objects.get_or_create(user=user, material=material)
         return instance
+    
+class TopicMaterialSerializer(serializers.ModelSerializer):
+    materials = MaterialSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'name', 'materials']

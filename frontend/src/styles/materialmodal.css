@@ -1,0 +1,122 @@
+/* ... (all your existing CSS from above) ... */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-box {
+  width: 600px; /* Fixed width */
+  max-width: 90%; /* Ensures responsiveness on smaller screens */
+  background-color: #15071A; /* Dark background */
+  padding: 1.5rem 2rem; /* Padding inside the modal */
+  border-radius: 10px;
+  color: white;
+  position: relative; /* For absolute positioning of elements like a close button if needed */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+
+  /* Flexbox to structure header, content, and buttons vertically */
+  display: flex;
+  flex-direction: column;
+  min-height: 320px; /* Minimum height */
+  max-height: 90vh; /* Maximum height to prevent overflow on short screens */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between; /* Pushes title left, icon right */
+  align-items: center; /* Vertically aligns title and icon */
+  margin-bottom: 1rem; /* Space below the header */
+}
+
+.modal-header h2 {
+  margin: 0; /* Remove default margin from h2 */
+  font-size: 1.5rem; /* Adjust title size as needed */
+  color: #E0E0E0; /* Lighter title color */
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  color: #AAA; /* Initial color for the icon */
+  cursor: pointer;
+  padding: 0.25rem; /* Add some padding to make it easier to click */
+  line-height: 1; /* Helps align icon if it has extra space */
+}
+
+.modal-close-button:hover {
+  color: red; /* Red color on hover for the icon */
+}
+
+.modal-close-button .MuiSvgIcon-root {
+  font-size: 2rem; 
+}
+
+.modal-content {
+  flex-grow: 1; /* Allows this section to take up available space, pushing buttons down */
+  overflow-y: auto; /* Add scroll if content overflows */
+  margin-bottom: 1.5rem; /* Space before the buttons */
+}
+
+.modal-description {
+  text-align: left; /* Explicitly left-align text */
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #C5C5C5; /* Slightly lighter than pure white for readability */
+  /* margin-bottom: 1rem; This was removed as per your implicit update by removing additional links section */
+}
+
+.modal-buttons {
+  display: flex; /* Arrange buttons side-by-side */
+  gap: 1rem; /* Space between the buttons */
+  margin-top: auto; /* Pushes buttons to the bottom if .modal-box is flex-column */
+}
+
+.material-action-button {
+  flex-grow: 1; /* Make buttons share the width equally */
+  flex-basis: 0; /* Ensures flex-grow works as expected */
+  padding: 0.75rem 1rem; /* Padding inside buttons */
+  border: none;
+  border-radius: 8px; /* Rounded corners for buttons */
+  font-size: 1rem;
+  /* font-weight: bold; --- User removed this */
+  text-align: center;
+  cursor: pointer;
+  background-color: #9FE215; /* Specified button color */
+  color: #030401; /* Dark text for contrast on light green button */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out; /* Added opacity to transition */
+}
+
+.material-action-button:hover {
+  background-color: #BBFF34; /* Specified hover color */
+}
+
+/* Styling for the disabled "Materials" button */
+.material-action-button.disabled-button,
+.material-action-button:disabled { /* Targets both the class and the disabled attribute */
+  background-color: #555; /* Gray background */
+  color: #999; /* Lighter gray text */
+  cursor: not-allowed; /* Indicates it's not clickable */
+  opacity: 0.7; /* Slightly faded */
+}
+
+/* Ensure hover effect doesn't override disabled style for the grayed out button */
+.material-action-button.disabled-button:hover,
+.material-action-button:disabled:hover {
+  background-color: #656565; /* Keep it gray on hover */
+  /* color: #999; Keep text color same */
+}
+
+/* If you need specific styles for the start learning button, you can use this class
+.start-learning-button {
+  Add any specific styles if it differs from the other action button
+} */

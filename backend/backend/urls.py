@@ -9,11 +9,17 @@ urlpatterns = [
 
     path('api/token/new/', TokenObtainPairView.as_view(), name='get_token'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
-    
-    path('api/topic/new/', CreateTopicView.as_view(), name='create-list-topic'),
-    path('api/material/new/', CreateMaterialView.as_view(), name='create-list-material'),
-    
-    path('api/usermaterial/', UserMaterialView.as_view(), name='create-user-material'),
-    
     path('api-auth/', include('rest_framework.urls')),
+
+    path('api/topic/new/', CreateTopicView.as_view(), name='create-list-topic'),
+
+    path('api/material/new/', CreateMaterialView.as_view(), name='create-list-material'),
+    path('api/materials/<int:pk>/delete/', DeleteMaterialView.as_view(), name='delete-material'),
+
+    path('api/usermaterial/', UserMaterialView.as_view(), name='create-user-material'),
+
+    path('api/topics-with-materials/', TopicMaterialView.as_view(), name='topic-material-list'),
+
+    # path('api/user/register/', CreateUserView.as_view(), name='register'),
+    # path('api/user/me/', CurrentUserView.as_view(), name='current-user'),
 ]
