@@ -80,7 +80,7 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = 'backend.wsgi.application'
 
-ASGI_APPLICATION = 'backend.asgi.application'
+# ASGI_APPLICATION = 'backend.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
