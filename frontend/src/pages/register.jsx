@@ -9,11 +9,10 @@ function Register() {
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 
 	const handleSubmit = (e) => {
-		e.preventDefault(); // Prevent full page reload
-		setShowPasswordForm(true); // Show password form
+		e.preventDefault();
+		setShowPasswordForm(true);
 	};
 
-	// Optionally pass the registration data to the password form
 	if (showPasswordForm) {
 		return (
 			<PasswordForm

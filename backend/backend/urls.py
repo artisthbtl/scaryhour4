@@ -20,6 +20,5 @@ urlpatterns = [
 
     path('api/topics-with-materials/', TopicMaterialView.as_view(), name='topic-material-list'),
 
-    # path('api/user/register/', CreateUserView.as_view(), name='register'),
-    # path('api/user/me/', CurrentUserView.as_view(), name='current-user'),
+    path('api/user/me/', CurrentUserView.as_view(), name='current-user'),
 ]

@@ -100,7 +100,6 @@
   background-color: #BBFF34; /* Specified hover color */
 }
 
-/* Styling for the disabled "Materials" button */
 .material-action-button.disabled-button,
 .material-action-button:disabled { /* Targets both the class and the disabled attribute */
   background-color: #555; /* Gray background */
@@ -109,11 +108,9 @@
   opacity: 0.7; /* Slightly faded */
 }
 
-/* Ensure hover effect doesn't override disabled style for the grayed out button */
 .material-action-button.disabled-button:hover,
 .material-action-button:disabled:hover {
-  background-color: #656565; /* Keep it gray on hover */
-  /* color: #999; Keep text color same */
+  background-color: #656565;
 }
 
 /* If you need specific styles for the start learning button, you can use this class

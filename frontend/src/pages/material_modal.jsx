@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/materialmodal.css"; // Ensure this path is correct
+import "../styles/materialmodal.css";
 import CloseIcon from '@mui/icons-material/Close';
 
 function MaterialModal({ material, onClose }) {
@@ -10,7 +10,7 @@ function MaterialModal({ material, onClose }) {
   const handleStartLearning = () => {
     console.log(`Start learning: ${material.name} (ID: ${material.id})`);
     alert(`Starting learning environment for: ${material.name}`);
-    onClose(); // Close modal after clicking start
+    onClose();
   };
 
   const handleOpenMaterialLink = () => {
@@ -39,7 +39,7 @@ function MaterialModal({ material, onClose }) {
           <button
             className={`material-action-button ${!material.link ? 'disabled-button' : ''}`}
             onClick={handleOpenMaterialLink}
-            disabled={!material.link} // Add disabled attribute
+            disabled={!material.link}
           >
             Materials
           </button>

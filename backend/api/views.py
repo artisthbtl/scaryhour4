@@ -18,14 +18,13 @@ class CreateMaterialView(generics.ListCreateAPIView):
 
 class DeleteMaterialView(generics.DestroyAPIView):
     queryset = Material.objects.all()
-    permission_classes = [IsAdminUser]  # or customize as needed
+    permission_classes = [IsAdminUser]
 
     def destroy(self, request, *args, **kwargs):
         material = self.get_object()
         topic = material.topic
         self.perform_destroy(material)
 
-        # Check if topic is now empty
         if not topic.materials.exists():
             topic.delete()
 
@@ -51,9 +50,9 @@ class TopicMaterialView(generics.ListAPIView):
     serializer_class = TopicMaterialSerializer
     permission_classes = [AllowAny]
 
-# class CurrentUserView(generics.ListAPIView):
-#     permission_classes = [IsAuthenticated]
+class CurrentUserView(generics.ListAPIView):
+    permission_classes = [AllowAny]
 
-#     def get(self, request):
-#         serializer = UserSerializer(request.user) # Use your existing UserSerializer
-#         return Response(serializer.data)
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)

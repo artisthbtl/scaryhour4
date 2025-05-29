@@ -37,7 +37,7 @@ function PasswordForm({ username, firstName, lastName }) {
         });
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        navigate("/");
+        navigate("/learn");
       } catch (err) {
         alert(err.response?.data?.detail || "Login failed");
       }
