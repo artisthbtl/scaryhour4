@@ -6,10 +6,10 @@ import api.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
-application = get_asgi_application()
+django_application = get_asgi_application()
 
 application = ProtocolTypeRouter({
-    'http': application,
+    'http': django_application,
 
     'websocket': AuthMiddlewareStack(
         URLRouter(
