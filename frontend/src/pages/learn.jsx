@@ -1,6 +1,6 @@
 import "../styles/App.css"
 import Sidebar from "./sidebar"
-import LearnPage from "./learnpage";
+import LearnPage from "./learnpage"
 
 function Learn() {
   return (
