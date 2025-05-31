@@ -17,6 +17,7 @@ body {
   flex-direction: column;
   overflow: hidden; 
   position: relative;
+  font-family: "Cal Sans", sans-serif;
 }
 
 .main-close-button {

@@ -22,7 +22,7 @@ function TerminalComponent() {
       const term = new Terminal({
         cursorBlink: true,
 				fontSize: 14,
-				letterSpacing: 0,
+        fontFamily: "'IBM Plex Mono', Consolas, 'Courier New', monospace",
         theme: {
           background: '#0c030f',
           foreground: '#F0F0F0',
@@ -59,11 +59,10 @@ function TerminalComponent() {
           if (data.output) {
             term.write(data.output);
           } else if (data.message) {
-            term.write(`\r\n${data.message}\r\n`);
+            term.write(`${data.message}\r\n`);
           } else if (data.error) {
           }
         } catch (e) {
-          console.warn('Received non-JSON or unexpected JSON structure:', event.data);
           term.write(event.data);
         }
       };

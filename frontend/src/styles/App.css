@@ -4,7 +4,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Cal Sans", sans-serif;
 }
 
 body {
@@ -22,6 +21,7 @@ body {
 }
 
 .wrapper {
+  font-family: "Cal Sans", sans-serif;
   width: 420px;
   background: transparent;
   backdrop-filter: grayscale(55%) blur(5px);

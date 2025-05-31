@@ -14,11 +14,9 @@ function MaterialModal({ material, onClose }) {
   };
 
   const handleOpenMaterialLink = () => {
-    // This check is still good, but the button will be disabled if no link
     if (material.link) {
       window.open(material.link, '_blank', 'noopener,noreferrer');
     }
-    // No need for an else alert here if the button is visibly disabled
   };
 
   return (
