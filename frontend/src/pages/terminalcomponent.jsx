@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
@@ -10,8 +10,7 @@ const TerminalComponent = () => {
     const termInstanceRef = useRef(null);
     const websocketRef = useRef(null);
     const fitAddonInstanceRef = useRef(null);
-
-    const [status, setStatus] = useState('connecting...');
+    // const [status, setStatus] = useState('connecting...');
 
     const debounce = (func, wait_ms) => {
         let timeout;
@@ -108,7 +107,6 @@ const TerminalComponent = () => {
         websocketRef.current = ws;
 
         ws.onopen = () => {
-            setStatus('<span style="background-color: lightgreen;">connected</span>');
             console.log("WebSocket connected");
             if (termInstanceRef.current === term) {
                  fitTerminalToScreen();
@@ -117,13 +115,11 @@ const TerminalComponent = () => {
         };
 
         ws.onclose = (event) => {
-            setStatus('<span style="background-color: #ff8383;">disconnected</span>');
             console.log("WebSocket disconnected:", event.reason || "No reason", "Code:", event.code);
             if (termInstanceRef.current === term) term.writeln("\r\n\n--- WebSocket Disconnected ---");
         };
 
         ws.onerror = (error) => {
-            setStatus('<span style="background-color: #ff8383;">error</span>');
             console.error("WebSocket error:", error);
             if (termInstanceRef.current === term) term.writeln("\r\n\n--- WebSocket Error ---");
         };
@@ -180,7 +176,7 @@ const TerminalComponent = () => {
     }, []);
 
     return (
-      <div ref={terminalContainerRef} style={{ height: 'calc(100vh - 70px)', width: '100%' }} />
+      <div ref={terminalContainerRef} style={{ height: '83vh', width: '100%' }} />
     );
 };
 

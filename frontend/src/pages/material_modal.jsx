@@ -1,15 +1,17 @@
-import React from "react";
 import "../styles/materialmodal.css";
 import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 function MaterialModal({ material, onClose }) {
+  const navigate = useNavigate();
+
   if (!material) {
     return null;
   }
 
   const handleStartLearning = () => {
     console.log(`Start learning: ${material.name} (ID: ${material.id})`);
-    alert(`Starting learning environment for: ${material.name}`);
+    navigate('/shell');
     onClose();
   };
 
