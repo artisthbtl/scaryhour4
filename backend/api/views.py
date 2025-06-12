@@ -61,7 +61,7 @@ class CurrentUserView(generics.ListAPIView):
         return Response(serializer.data)
 
 class StartLabView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         material_id = request.data.get('material_id')
@@ -79,31 +79,52 @@ class StartLabView(APIView):
             client = docker.from_env()
             username = request.user.username if request.user and request.user.is_authenticated else 'student'
             sanitized_username = "".join(c for c in username if c.isalnum() or c in ('-', '_')).rstrip()
+            session_prefix = f"scaryhour4-{sanitized_username}-{str(session.id)[:8]}"
+            
+            lab_network = None
+            
+            if material and material.target_image:
+                print(f"--- FOUND TARGET IMAGE '{material.target_image}', CREATING FULL LAB ---")
+                
+                # 1. Create a dedicated network
+                network_name = f"{session_prefix}-net"
+                lab_network = client.networks.create(network_name, driver="bridge")
+                session.network_id = lab_network.id
 
-            container_name = f"scaryhour4-kali-{sanitized_username}-{str(session.id)[:8]}"
+                # 2. Start the Hackable Machine and connect it to the network
+                target_container_name = f"{session_prefix}-target"
+                target_hostname = 'target'
+                target_container = client.containers.run(
+                    material.target_image,
+                    detach=True,
+                    name=target_container_name,
+                    hostname=target_hostname,
+                    network=lab_network.name,
+                )
+                session.target_container_id = target_container.id
+                print(f"Spawned target '{material.target_image}': {target_container.short_id}")
 
-            try:
-                existing_container = client.containers.get(container_name)
-                existing_container.remove(force=True)
-            except docker.errors.NotFound:
-                pass
+            else:
+                print("--- NO TARGET IMAGE FOUND, CREATING KALI-ONLY SESSION ---")
 
-            container = client.containers.run(
+            # 3. Start the Kali container and connect it to the same network
+            kali_container_name = f"{session_prefix}-kali"
+            kali_container = client.containers.run(
                 'scaryhour-kali',
-                name=container_name,
+                name=kali_container_name,
                 detach=True,
                 tty=True,
                 stdin_open=True,
                 environment={'CONTAINER_USER': username},
+                network=lab_network.name if lab_network else None,
             )
+            session.kali_container_id = kali_container.id
+            print(f"Spawned kali container: {kali_container.short_id}")
 
-            session.kali_container_id = container.id
             session.save()
-
-            serializer = LabSessionSerializer(session)
             return Response({"session_id": session.id}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             session.delete()
-            print(f"Docker failed to start: {e}")
+            print(f"Docker failed to start lab environment: {e}")
             return Response({"error": "Failed to start the lab environment."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

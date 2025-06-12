@@ -15,6 +15,7 @@ class Material(models.Model):
     link = models.CharField(max_length=250, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='materials')
+    target_image = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -36,6 +37,8 @@ class LabSession(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
     kali_container_id = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    target_container_id = models.CharField(max_length=255, null=True, blank=True)
+    network_id = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"Lab Session {self.id} for {self.user.username}"

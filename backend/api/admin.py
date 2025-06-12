@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(Topic)
 admin.site.register(Material)
 admin.site.register(UserMaterial)
+admin.site.register(LabSession)

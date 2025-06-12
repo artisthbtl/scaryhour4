@@ -62,14 +62,38 @@ class TerminalConsumer(AsyncWebsocketConsumer):
         if hasattr(self, 'ping_task'):
             self.ping_task.cancel()
         def _cleanup():
+            print(f"Cleaning up resources for session {self.session_id}")
             try:
-                if hasattr(self, 'container') and self.container:
-                    container_to_remove = self.docker_client.containers.get(self.container.id)
-                    container_to_remove.remove(force=True)
-                if hasattr(self, 'lab_session') and self.lab_session:
-                    self.lab_session.delete()
+                client = self.docker_client
+
+                if self.lab_session.kali_container_id:
+                    try:
+                        kali_container = client.containers.get(self.lab_session.kali_container_id)
+                        kali_container.remove(force=True)
+                        print(f"Removed Kali container: {self.lab_session.kali_container_id[:12]}")
+                    except docker.errors.NotFound:
+                        print("Kali container not found, may have already been removed.")
+                
+                if self.lab_session.target_container_id:
+                    try:
+                        target_container = client.containers.get(self.lab_session.target_container_id)
+                        target_container.remove(force=True)
+                        print(f"Removed Target container: {self.lab_session.target_container_id[:12]}")
+                    except docker.errors.NotFound:
+                        print("Target container not found.")
+                
+                if self.lab_session.network_id:
+                    try:
+                        network = client.networks.get(self.lab_session.network_id)
+                        network.remove()
+                        print(f"Removed network: {self.lab_session.network_id[:12]}")
+                    except docker.errors.NotFound:
+                        print("Network not found.")
+
+                self.lab_session.delete()
+                print("LabSession record deleted.")
             except Exception as e:
-                print(f"Error during cleanup for session {self.session_id}: {e}")
+                print(f"An error occurred during cleanup for session {self.session_id}: {e}")
         if hasattr(self, 'docker_client'):
             await asyncio.to_thread(_cleanup)
 
