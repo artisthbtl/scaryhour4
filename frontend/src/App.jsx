@@ -39,7 +39,7 @@ function App() {
 				</ProtectedRoute>
 			}
 			/>
-			<Route path="/shell" element={
+			<Route path="/shell/:sessionId" element={
 				<ProtectedRoute>
 				<Shell />
 				</ProtectedRoute>

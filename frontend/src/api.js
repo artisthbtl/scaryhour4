@@ -19,3 +19,7 @@ api.interceptors.request.use(
 );
 
 export default api;
+
+export const startLabSession = (materialId) => {
+    return api.post('/api/labs/start/', { material_id: materialId });
+};

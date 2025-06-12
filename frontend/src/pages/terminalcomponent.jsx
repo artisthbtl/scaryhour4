@@ -3,9 +3,10 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { SearchAddon } from '@xterm/addon-search';
+import { ACCESS_TOKEN } from '../constant';
 import '@xterm/xterm/css/xterm.css';
 
-const TerminalComponent = () => {
+const TerminalComponent = ({ sessionId }) => {
     const terminalContainerRef = useRef(null);
     const termInstanceRef = useRef(null);
     const websocketRef = useRef(null);
@@ -61,14 +62,13 @@ const TerminalComponent = () => {
 
 
     useEffect(() => {
-        if (!terminalContainerRef.current || termInstanceRef.current) {
+        if (!terminalContainerRef.current || !sessionId) {
             return;
         }
 
         if (!fitAddonInstanceRef.current) {
             fitAddonInstanceRef.current = new FitAddon();
         }
-
         const term = new Terminal({
           cursorBlink: true,
           fontSize: 14,
@@ -81,12 +81,23 @@ const TerminalComponent = () => {
           },
         });
         termInstanceRef.current = term;
-
         term.loadAddon(fitAddonInstanceRef.current);
         term.loadAddon(new WebLinksAddon());
         term.loadAddon(new SearchAddon());
-
         term.open(terminalContainerRef.current);
+        term.attachCustomKeyEventHandler(customKeyEventHandler);
+
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (!token) {
+            console.error("No auth token found, cannot connect WebSocket.");
+            term.writeln("\r\n\n--- Authentication Error: Not logged in ---");
+            return;
+        }
+
+        const socketUrl = `ws://127.0.0.1:8000/ws/terminal/${sessionId}/?token=${token}`;
+        
+        const ws = new WebSocket(socketUrl);
+        websocketRef.current = ws;
 
         const initialFitTimeoutId = setTimeout(() => {
             if (termInstanceRef.current === term && terminalContainerRef.current && document.body.contains(terminalContainerRef.current)) {
@@ -98,15 +109,9 @@ const TerminalComponent = () => {
                 }
             }
         }, 50);
-        
-        term.attachCustomKeyEventHandler(customKeyEventHandler);
-
-        const socketUrl = 'ws://127.0.0.1:8000/ws/terminal/';
-        const ws = new WebSocket(socketUrl);
-        websocketRef.current = ws;
 
         ws.onopen = () => {
-            console.log("WebSocket connected");
+            console.log("WebSocket connected for session:", sessionId);
             if (termInstanceRef.current === term) {
                  fitTerminalToScreen();
             }
@@ -122,26 +127,32 @@ const TerminalComponent = () => {
             console.error("WebSocket error:", error);
             if (termInstanceRef.current === term) term.writeln("\r\n\n--- WebSocket Error ---");
         };
-
+        
+        const hasFittedOnFirstMessage = { current: false };
         ws.onmessage = (event) => {
+             if (!hasFittedOnFirstMessage.current) {
+                console.log("Fitting terminal on first message from backend.");
+                fitTerminalToScreen();
+                hasFittedOnFirstMessage.current = true;
+            }
             try {
                 const data = JSON.parse(event.data);
                 
                 if (data.type === 'ping') {
-                    console.log("Received ping, sending pong.");
                     if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
                         websocketRef.current.send(JSON.stringify({ type: 'pong' }));
                     }
                     return;
                 }
-
                 if (termInstanceRef.current === term) {
                     if (data.output) {
                         term.write(data.output);
                     } else if (data.error) {
                         term.writeln(`\r\n\n<Error from server: ${data.error}>`);
-                    } else if (data.type === "status" && data.message) {
-                        term.writeln(`${data.message}`);
+                    } else if (data.message) {
+                        term.writeln(`\r\n\x1b[32m[System]: ${data.message}\x1b[0m\r\n`);
+                    } else if (data.type === 'status' && data.message) { 
+                        term.writeln(`\r\n\x1b[32m[System]: ${data.message}\x1b[0m\r\n`);
                     }
                 }
             } catch (e) {
@@ -159,10 +170,9 @@ const TerminalComponent = () => {
         window.addEventListener('resize', debouncedFitHandler);
 
         return () => {
-            console.log("TerminalComponent unmounting: Cleaning up...");
+            console.log("TerminalComponent unmounting: Cleaning up session", sessionId);
             clearTimeout(initialFitTimeoutId);
             window.removeEventListener('resize', debouncedFitHandler);
-
             if (onDataDisposable) {
                 onDataDisposable.dispose();
             }
@@ -181,7 +191,7 @@ const TerminalComponent = () => {
                 termInstanceRef.current = null;
             }
         };
-    }, []);
+    }, [sessionId]);
 
     return (
       <div ref={terminalContainerRef} style={{ height: '83vh', width: '100%' }} />

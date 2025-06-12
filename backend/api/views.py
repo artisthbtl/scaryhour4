@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .serializers import *
-from .models import Material, Topic
+from .models import Topic, Material, UserMaterial, LabSession
 from rest_framework.response import Response
+import docker
+import uuid
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -56,3 +59,51 @@ class CurrentUserView(generics.ListAPIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+class StartLabView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        material_id = request.data.get('material_id')
+        if not material_id:
+            return Response({"error": "material_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            material = Material.objects.get(id=material_id)
+        except Material.DoesNotExist:
+            return Response({"error": "Material not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        session = LabSession.objects.create(user=request.user, material=material)
+        
+        try:
+            client = docker.from_env()
+            username = request.user.username if request.user and request.user.is_authenticated else 'student'
+            sanitized_username = "".join(c for c in username if c.isalnum() or c in ('-', '_')).rstrip()
+
+            container_name = f"scaryhour4-kali-{sanitized_username}-{str(session.id)[:8]}"
+
+            try:
+                existing_container = client.containers.get(container_name)
+                existing_container.remove(force=True)
+            except docker.errors.NotFound:
+                pass
+
+            container = client.containers.run(
+                'scaryhour-kali',
+                name=container_name,
+                detach=True,
+                tty=True,
+                stdin_open=True,
+                environment={'CONTAINER_USER': username},
+            )
+
+            session.kali_container_id = container.id
+            session.save()
+
+            serializer = LabSessionSerializer(session)
+            return Response({"session_id": session.id}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            session.delete()
+            print(f"Docker failed to start: {e}")
+            return Response({"error": "Failed to start the lab environment."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
