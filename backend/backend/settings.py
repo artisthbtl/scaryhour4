@@ -141,3 +141,5 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
