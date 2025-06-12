@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Topic, Material, UserMaterial, LabSession
+from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,5 +64,10 @@ class TopicMaterialSerializer(serializers.ModelSerializer):
 class LabSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabSession
-        fields = ['id', 'user', 'material', 'created_at'] # We only really need to send the 'id' back
+        fields = ['id', 'user', 'material', 'created_at']
         read_only_fields = ['user', 'created_at']
+
+class GuideStepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuideStep
+        fields = ['step_number', 'content']

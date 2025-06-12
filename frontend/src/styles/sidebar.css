@@ -5,7 +5,7 @@
 	padding-top: 25px;
 	position: relative;
 	background: transparent;
-  backdrop-filter: grayscale(55%) blur(5px);
+  backdrop-filter: grayscale(90%);
   box-shadow: 0 0 10px rgba(0, 0, 0, .2);
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   font-family: "Cal Sans", sans-serif;
@@ -41,7 +41,7 @@
 
 .searchbox svg, 
 .searchbox i {
-  flex-shrink: 0; /* keeps icon from shrinking */
+  flex-shrink: 0;
   width: 20px;
   height: 20px;
   color: #fff;

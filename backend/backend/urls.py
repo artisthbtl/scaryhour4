@@ -25,6 +25,8 @@ urlpatterns = [
     path('api/user/me/', CurrentUserView.as_view(), name='current-user'),
 
     path('api/labs/start/', StartLabView.as_view(), name='start-lab'),
+
+    path('api/labs/session/<uuid:session_id>/guide/', LabSessionGuideView.as_view(), name='lab-session-guide'),
 ]
 
 if settings.DEBUG:

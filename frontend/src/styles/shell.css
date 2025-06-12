@@ -145,7 +145,6 @@ body {
   font-size: 20px; 
 }
 
-
 .xterm-outer-container {
   flex-grow: 1;
   width: 100%;
@@ -161,6 +160,75 @@ body {
 }
 
 .xterm-viewport {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.guide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 10;
+  padding: 40px;
+}
+
+.guide-box {
+  background-color: #15071A;
+  color: #e4e4e4;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1.5px solid #9FE215;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.guide-avatar {
+  width: 80px;
+  height: 80px;
+}
+
+.guide-content {
+  flex-grow: 1;
+}
+
+.guide-text {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.guide-next-button {
+  display: block;
+  margin-left: auto;
+  padding: 10px 20px;
+  background-color: #9FE215;
+  color: #0c030f;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out; 
+}
+
+.guide-next-button:hover {
+  background-color: #BBFF34;
+}
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  background-color: #0c030f;
+  color: white;
 }

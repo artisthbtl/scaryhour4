@@ -42,3 +42,15 @@ class LabSession(models.Model):
 
     def __str__(self):
         return f"Lab Session {self.id} for {self.user.username}"
+
+class GuideStep(models.Model):
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='guide_steps')
+    step_number = models.PositiveIntegerField()
+    content = models.TextField()
+
+    class Meta:
+        ordering = ['step_number']
+        unique_together = ('material', 'step_number')
+
+    def __str__(self):
+        return f"{self.material.name} - Step {self.step_number}"

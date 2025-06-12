@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .serializers import *
-from .models import Topic, Material, UserMaterial, LabSession
+from .models import *
 from rest_framework.response import Response
 import docker
 import uuid
@@ -86,12 +86,10 @@ class StartLabView(APIView):
             if material and material.target_image:
                 print(f"--- FOUND TARGET IMAGE '{material.target_image}', CREATING FULL LAB ---")
                 
-                # 1. Create a dedicated network
                 network_name = f"{session_prefix}-net"
                 lab_network = client.networks.create(network_name, driver="bridge")
                 session.network_id = lab_network.id
 
-                # 2. Start the Hackable Machine and connect it to the network
                 target_container_name = f"{session_prefix}-target"
                 target_hostname = 'target'
                 target_container = client.containers.run(
@@ -107,7 +105,6 @@ class StartLabView(APIView):
             else:
                 print("--- NO TARGET IMAGE FOUND, CREATING KALI-ONLY SESSION ---")
 
-            # 3. Start the Kali container and connect it to the same network
             kali_container_name = f"{session_prefix}-kali"
             kali_container = client.containers.run(
                 'scaryhour-kali',
@@ -123,8 +120,21 @@ class StartLabView(APIView):
 
             session.save()
             return Response({"session_id": session.id}, status=status.HTTP_201_CREATED)
-
         except Exception as e:
             session.delete()
             print(f"Docker failed to start lab environment: {e}")
             return Response({"error": "Failed to start the lab environment."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class LabSessionGuideView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, session_id, *args, **kwargs):
+        try:
+            session = LabSession.objects.get(id=session_id, user=request.user)
+            if session.material:
+                steps = session.material.guide_steps.all()
+                serializer = GuideStepSerializer(steps, many=True)
+                return Response(serializer.data)
+            return Response([], status=status.HTTP_200_OK) # No material, so no guide
+        except LabSession.DoesNotExist:
+            return Response({"error": "Session not found or not authorized"}, status=status.HTTP_404_NOT_FOUND)
