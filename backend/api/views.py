@@ -65,14 +65,14 @@ class StartLabView(APIView):
 
     def post(self, request, *args, **kwargs):
         material_id = request.data.get('material_id')
-        if not material_id:
-            return Response({"error": "material_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            material = Material.objects.get(id=material_id)
-        except Material.DoesNotExist:
-            return Response({"error": "Material not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        material = None
+        
+        if material_id:
+            try:
+                material = Material.objects.get(id=material_id)
+            except Material.DoesNotExist:
+                return Response({"error": "Material not found"}, status=status.HTTP_404_NOT_FOUND)
+        
         session = LabSession.objects.create(user=request.user, material=material)
         
         try:

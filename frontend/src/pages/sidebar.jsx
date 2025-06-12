@@ -1,8 +1,9 @@
 import "../styles/sidebar.css";
 import { SidebarData } from "./sidebar_data";
+import { useNavigate } from 'react-router-dom';
+import api from "../api";
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -10,6 +11,20 @@ function Sidebar() {
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
+  };
+
+  const handleGenericShell = async () => {
+    console.log("Starting generic shell session...");
+    try {
+      const response = await api.post('/api/labs/start/', {});
+      if (response.status === 201 && response.data.session_id) {
+        const sessionId = response.data.session_id;
+        navigate(`/shell/${sessionId}`);
+      }
+    } catch (err) {
+      console.error("Failed to start generic shell session:", err);
+      alert("Could not start a generic shell. Please try again.");
+    }
   };
 
   return (
@@ -24,18 +39,16 @@ function Sidebar() {
             const isLearnActiveOnRoot = val.link === "/learn" && window.location.pathname === "/";
             const isActive = window.location.pathname === val.link || isLearnActiveOnRoot;
 
+            const clickHandler = val.title === "Shell" 
+              ? handleGenericShell 
+              : () => navigate(val.link);
+
             return (
               <li
                 key={key}
                 id={isActive ? "active" : ""}
                 className="row"
-                onClick={() => {
-                  if (val.link === "/learn" && window.location.pathname === "/") {
-                    navigate("/learn");
-                  } else {
-                    navigate(val.link);
-                  }
-                }}
+                onClick={clickHandler}
               >
                 <div id="icon">{val.icon}</div>
                 <div id="title">{val.title}</div>
