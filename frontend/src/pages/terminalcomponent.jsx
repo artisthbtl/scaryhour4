@@ -10,7 +10,6 @@ const TerminalComponent = () => {
     const termInstanceRef = useRef(null);
     const websocketRef = useRef(null);
     const fitAddonInstanceRef = useRef(null);
-    // const [status, setStatus] = useState('connecting...');
 
     const debounce = (func, wait_ms) => {
         let timeout;
@@ -127,6 +126,15 @@ const TerminalComponent = () => {
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                
+                if (data.type === 'ping') {
+                    console.log("Received ping, sending pong.");
+                    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+                        websocketRef.current.send(JSON.stringify({ type: 'pong' }));
+                    }
+                    return;
+                }
+
                 if (termInstanceRef.current === term) {
                     if (data.output) {
                         term.write(data.output);
