@@ -8,14 +8,12 @@ import "../styles/shell.css";
 
 const GuideOverlay = ({ steps, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  
-  // const dexterImagePath = '../styles/pixelman.png';
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onComplete();
+      onComplete(); 
     }
   };
 
@@ -23,25 +21,23 @@ const GuideOverlay = ({ steps, onComplete }) => {
     <div className="guide-overlay">
       <div className="guide-box">
         <div className="guide-content">
-					<p className="guide-text">{steps[currentStep].content}</p>
-					<button onClick={handleNext} className="guide-next-button">
-					{currentStep < steps.length - 1 ? "Next →" : "Start Hacking!"}
-					</button>
+          <p className="guide-text">{steps[currentStep].content}</p>
+          <button onClick={handleNext} className="guide-next-button">
+            {currentStep < steps.length - 1 ? "Next →" : "Start Hacking!"}
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-
 function Shell() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
-	console.log("Shell component rendered with sessionId:", sessionId);
 
   const [guideSteps, setGuideSteps] = useState([]);
-  const [isGuiding, setIsGuiding] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isGuiding, setIsGuiding] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     if (sessionId) {
@@ -55,13 +51,13 @@ function Shell() {
         })
         .catch(error => {
           console.error("Failed to fetch guide steps:", error);
-          setIsGuiding(false);
+          setIsGuiding(false); 
         })
         .finally(() => {
-          setIsLoading(false);
+          setIsLoading(false); 
         });
     }
-  }, [sessionId]);
+  }, [sessionId]); 
 
 
   const handleAddTab = () => {
@@ -114,7 +110,11 @@ function Shell() {
       </div>
       <div className="xterm-outer-container">
         <div className="xterm-inner-container">
-          <TerminalComponent sessionId={sessionId} />
+          <TerminalComponent 
+            sessionId={sessionId} 
+            setGuideSteps={setGuideSteps}
+            setIsGuiding={setIsGuiding}
+          />
         </div>
       </div>
     </div>

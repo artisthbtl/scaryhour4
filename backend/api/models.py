@@ -48,6 +48,8 @@ class GuideStep(models.Model):
     step_number = models.PositiveIntegerField()
     content = models.TextField()
 
+    trigger_command = models.CharField(max_length=255, blank=True, null=True)
+
     class Meta:
         ordering = ['step_number']
         unique_together = ('material', 'step_number')

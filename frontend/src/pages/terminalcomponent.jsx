@@ -6,7 +6,7 @@ import { SearchAddon } from '@xterm/addon-search';
 import { ACCESS_TOKEN } from '../constant';
 import '@xterm/xterm/css/xterm.css';
 
-const TerminalComponent = ({ sessionId }) => {
+const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
     const terminalContainerRef = useRef(null);
     const termInstanceRef = useRef(null);
     const websocketRef = useRef(null);
@@ -69,6 +69,7 @@ const TerminalComponent = ({ sessionId }) => {
         if (!fitAddonInstanceRef.current) {
             fitAddonInstanceRef.current = new FitAddon();
         }
+
         const term = new Terminal({
           cursorBlink: true,
           fontSize: 14,
@@ -95,7 +96,6 @@ const TerminalComponent = ({ sessionId }) => {
         }
 
         const socketUrl = `ws://127.0.0.1:8000/ws/terminal/${sessionId}/?token=${token}`;
-        
         const ws = new WebSocket(socketUrl);
         websocketRef.current = ws;
 
@@ -130,28 +130,31 @@ const TerminalComponent = ({ sessionId }) => {
         
         const hasFittedOnFirstMessage = { current: false };
         ws.onmessage = (event) => {
-             if (!hasFittedOnFirstMessage.current) {
-                console.log("Fitting terminal on first message from backend.");
+            const hasFittedOnFirstMessage = { current: false };
+            if (!hasFittedOnFirstMessage.current) {
                 fitTerminalToScreen();
                 hasFittedOnFirstMessage.current = true;
             }
             try {
                 const data = JSON.parse(event.data);
                 
-                if (data.type === 'ping') {
-                    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
-                        websocketRef.current.send(JSON.stringify({ type: 'pong' }));
-                    }
+                if (data.type === 'show_guide') {
+                    console.log("Received show_guide trigger from backend:", data.steps);
+                    setGuideSteps(data.steps);
+                    setIsGuiding(true);
                     return;
                 }
+
+                if (data.type === 'ping') {
+                    return;
+                }
+
                 if (termInstanceRef.current === term) {
                     if (data.output) {
                         term.write(data.output);
                     } else if (data.error) {
                         term.writeln(`\r\n\n<Error from server: ${data.error}>`);
                     } else if (data.message) {
-                        term.writeln(`\r\n\x1b[32m[System]: ${data.message}\x1b[0m\r\n`);
-                    } else if (data.type === 'status' && data.message) { 
                         term.writeln(`\r\n\x1b[32m[System]: ${data.message}\x1b[0m\r\n`);
                     }
                 }
@@ -191,7 +194,7 @@ const TerminalComponent = ({ sessionId }) => {
                 termInstanceRef.current = null;
             }
         };
-    }, [sessionId]);
+    }, [sessionId, setGuideSteps, setIsGuiding]);
 
     return (
       <div ref={terminalContainerRef} style={{ height: '83vh', width: '100%' }} />
