@@ -5,7 +5,8 @@ import api from "../api";
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-function Sidebar() {
+// Receive searchQuery and onSearch as props from the parent (Learn.jsx)
+function Sidebar({ searchQuery, onSearch }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,7 +31,13 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div className="searchbox">
-        <input type="text" placeholder="Search" />
+        {/* The input is now controlled by the parent component */}
+        <input
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => onSearch(e.target.value)}
+        />
         <SearchTwoToneIcon />
       </div>
       <div className="navigation">
@@ -39,8 +46,8 @@ function Sidebar() {
             const isLearnActiveOnRoot = val.link === "/learn" && window.location.pathname === "/";
             const isActive = window.location.pathname === val.link || isLearnActiveOnRoot;
 
-            const clickHandler = val.title === "Shell" 
-              ? handleGenericShell 
+            const clickHandler = val.title === "Shell"
+              ? handleGenericShell
               : () => navigate(val.link);
 
             return (

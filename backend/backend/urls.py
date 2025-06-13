@@ -26,7 +26,9 @@ urlpatterns = [
 
     path('api/labs/start/', StartLabView.as_view(), name='start-lab'),
 
-    path('api/labs/session/<uuid:session_id>/guide/', LabSessionGuideView.as_view(), name='lab-session-guide'),
+    path('api/labs/session/<uuid:session_id>/guide/', LabSessionGuideView.as_view(), name='lab-session-guide'),\
+    
+    path('api/search/', SearchView.as_view(), name='search'),
 ]
 
 if settings.DEBUG:

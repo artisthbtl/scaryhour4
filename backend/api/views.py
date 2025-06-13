@@ -3,9 +3,11 @@ from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from django.db.models import Q
 from .serializers import *
 from .models import *
 from rest_framework.response import Response
+from collections import OrderedDict
 import docker
 import uuid
 
@@ -138,3 +140,48 @@ class LabSessionGuideView(APIView):
             return Response([], status=status.HTTP_200_OK) # No material, so no guide
         except LabSession.DoesNotExist:
             return Response({"error": "Session not found or not authorized"}, status=status.HTTP_404_NOT_FOUND)
+
+class SearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = request.query_params.get('q', None)
+
+        if not query:
+            return Response([], status=200)
+
+        topic_hits = Topic.objects.filter(name__icontains=query)
+        material_hits = Material.objects.filter(name__icontains=query).select_related('topic')
+
+        structured_results = OrderedDict()
+
+        for topic in topic_hits:
+            if topic.id not in structured_results:
+                structured_results[topic.id] = {
+                    "id": topic.id,
+                    "name": topic.name,
+                    "materials": [
+                        {"id": m.id, "name": m.name, "description": m.description, "link": m.link}
+                        for m in topic.materials.all()
+                    ]
+                }
+
+        for material in material_hits:
+            topic = material.topic
+            if topic.id not in structured_results:
+                structured_results[topic.id] = {
+                    "id": topic.id,
+                    "name": topic.name,
+                    "materials": []
+                }
+            
+            existing_material_ids = [m['id'] for m in structured_results[topic.id]['materials']]
+            if material.id not in existing_material_ids:
+                structured_results[topic.id]['materials'].append({
+                    "id": material.id,
+                    "name": material.name,
+                    "description": material.description,
+                    "link": material.link
+                })
+
+        final_response_data = list(structured_results.values())
+        
+        return Response(final_response_data)

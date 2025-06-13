@@ -23,7 +23,7 @@ const GuideOverlay = ({ steps, onComplete }) => {
         <div className="guide-content">
           <p className="guide-text">{steps[currentStep].content}</p>
           <button onClick={handleNext} className="guide-next-button">
-            {currentStep < steps.length - 1 ? "Next →" : "Start Hacking!"}
+            {currentStep < steps.length - 1 ? "Next →" : "Alright!"}
           </button>
         </div>
       </div>

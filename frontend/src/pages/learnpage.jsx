@@ -3,23 +3,16 @@ import "../styles/learnpage.css";
 import MaterialModal from "./material_modal";
 import { ACCESS_TOKEN } from "../constant";
 
-function LearnPage() {
-  const [topics, setTopics] = useState([]);
+function LearnPage({ searchQuery, searchResults, isLoading, topics }) {
   const [showModal, setShowModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/topics-with-materials/")
-      .then((res) => res.json())
-      .then((data) => setTopics(data))
-      .catch((err) => console.error("Failed to fetch topics:", err));
-
     const fetchCurrentUser = async () => {
       try {
         const token = localStorage.getItem(ACCESS_TOKEN);
         if (!token) {
-          console.log("No token found, user might not be logged in.");
           setUsername("Guest");
           return;
         }
@@ -35,11 +28,7 @@ function LearnPage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const userData = await response.json();
-        if (userData && userData.username) {
-          setUsername(userData.username);
-        } else {
-          setUsername("User");
-        }
+        setUsername(userData.username || "User");
       } catch (error) {
         console.error("Failed to fetch user data:", error);
         setUsername("User");
@@ -59,30 +48,42 @@ function LearnPage() {
     setSelectedMaterial(null);
   };
 
+  const hasSearchQuery = searchQuery.length > 1;
+
+  const dataToRender = hasSearchQuery ? searchResults : topics;
+
   return (
     <div className="learnpage">
       <div className="title">
-        <h1>hi, {username || "Loading..."}</h1> 
+        <h1>hi, {username || "Loading..."}</h1>
       </div>
       <div className="topic-box">
-        {topics.map((topic) => (
-          <div key={topic.id} className="topic-section">
-            <div className="topic-name">
-              <h1>{topic.name}</h1>
-            </div>
-            <div className="grid-container">
-              {topic.materials.map((material) => (
-                <div
-                  className="material-box"
-                  key={material.id}
-                  onClick={() => handleMaterialClick(material)}
-                >
-                  {material.name}
+        {isLoading ? (
+          <p>Searching...</p>
+        ) : hasSearchQuery && dataToRender.length === 0 ? (
+          <p>No results found for "{searchQuery}".</p>
+        ) : (
+          dataToRender.map((topic) => (
+            topic.materials && topic.materials.length > 0 && (
+              <div key={topic.id} className="topic-section">
+                <div className="topic-name">
+                  <h1>{topic.name}</h1>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+                <div className="grid-container">
+                  {topic.materials.map((material) => (
+                    <div
+                      className="material-box"
+                      key={material.id}
+                      onClick={() => handleMaterialClick(material)}
+                    >
+                      {material.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          ))
+        )}
       </div>
 
       {showModal && selectedMaterial && (
