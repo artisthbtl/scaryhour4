@@ -96,7 +96,7 @@ class TerminalConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_guide_steps(self):
         if self.lab_session and self.lab_session.material:
-            return list(self.lab_session.material.guide_steps.all().values('step_number', 'content', 'trigger_command'))
+            return list(self.lab_session.material.guide_steps.all().values('step_number', 'content', 'trigger_command', 'redirect_url'))
         return []
     
     async def attach_to_container(self):

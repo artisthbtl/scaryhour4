@@ -47,8 +47,8 @@ class GuideStep(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='guide_steps')
     step_number = models.PositiveIntegerField()
     content = models.TextField()
-
     trigger_command = models.CharField(max_length=255, blank=True, null=True)
+    redirect_url = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         ordering = ['step_number']

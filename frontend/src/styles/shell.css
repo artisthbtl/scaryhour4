@@ -184,7 +184,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   border: 1.5px solid #9FE215;
-  max-width: 900px;
+  max-width: 950px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -201,7 +201,7 @@ body {
 }
 
 .guide-text {
-  margin: 0 0 15px 0;
+  margin: 0 0px 20px 0;
   font-size: 18px;
   line-height: 1.5;
 }
@@ -209,7 +209,7 @@ body {
 .guide-next-button {
   display: block;
   margin-left: auto;
-  padding: 10px 20px;
+  padding: 8px 20px;
   background-color: #9FE215;
   color: #0c030f;
   border: none;

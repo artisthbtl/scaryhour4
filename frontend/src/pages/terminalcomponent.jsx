@@ -6,7 +6,7 @@ import { SearchAddon } from '@xterm/addon-search';
 import { ACCESS_TOKEN } from '../constant';
 import '@xterm/xterm/css/xterm.css';
 
-const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
+const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding, setIsDisconnected }) => {
     const terminalContainerRef = useRef(null);
     const termInstanceRef = useRef(null);
     const websocketRef = useRef(null);
@@ -41,7 +41,6 @@ const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
 			}
 			if (e.ctrlKey && e.shiftKey && termInstanceRef.current) {
 				const key = e.key.toLowerCase();
-				
 				if (key === "c" || key === "x") {
 					const toCopy = termInstanceRef.current.getSelection();
 					if (toCopy) {
@@ -112,16 +111,18 @@ const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
         };
 
         ws.onclose = (event) => {
-            console.log("WebSocket disconnected:", event.reason || "No reason", "Code:", event.code);
-            if (termInstanceRef.current === term) term.writeln("\r\n\n--- WebSocket Disconnected ---");
-        };
+					console.log("WebSocket disconnected:", event.reason || "No reason", "Code:", event.code);
+					if (termInstanceRef.current === term) {
+						term.writeln("\r\n\n--- WebSocket Disconnected ---");
+					}
+					setIsDisconnected(true);
+				};
 
         ws.onerror = (error) => {
             console.error("WebSocket error:", error);
             if (termInstanceRef.current === term) term.writeln("\r\n\n--- WebSocket Error ---");
         };
         
-        const hasFittedOnFirstMessage = { current: false };
         ws.onmessage = (event) => {
             const hasFittedOnFirstMessage = { current: false };
             if (!hasFittedOnFirstMessage.current) {
@@ -192,7 +193,7 @@ const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
                 termInstanceRef.current = null;
             }
         };
-    }, [sessionId, setGuideSteps, setIsGuiding]);
+    }, [sessionId, setGuideSteps, setIsGuiding, setIsDisconnected]);
 
     return (
       <div ref={terminalContainerRef} style={{ height: '83vh', width: '100%' }} />

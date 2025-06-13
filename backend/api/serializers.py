@@ -70,4 +70,4 @@ class LabSessionSerializer(serializers.ModelSerializer):
 class GuideStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = GuideStep
-        fields = ['step_number', 'content']
+        fields = ['step_number', 'content', 'redirect_url']

@@ -51,19 +51,19 @@ class UserMaterialView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 class TopicMaterialView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Topic.objects.all()
     serializer_class = TopicMaterialSerializer
-    permission_classes = [AllowAny]
 
 class CurrentUserView(generics.ListAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 class StartLabView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         material_id = request.data.get('material_id')
@@ -181,7 +181,6 @@ class SearchView(APIView):
                     "description": material.description,
                     "link": material.link
                 })
-
         final_response_data = list(structured_results.values())
         
         return Response(final_response_data)

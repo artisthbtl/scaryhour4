@@ -6,13 +6,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import api from '../api';
 import "../styles/shell.css";
 
-const GuideOverlay = ({ steps, onComplete }) => {
+const GuideOverlay = ({ steps, onComplete, onRedirect }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const handleNext = () => {
+    const step = steps[currentStep];
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      if (step.redirect_url) {
+        onRedirect(step.redirect_url);
+      }
       onComplete(); 
     }
   };
@@ -37,7 +41,8 @@ function Shell() {
 
   const [guideSteps, setGuideSteps] = useState([]);
   const [isGuiding, setIsGuiding] = useState(true); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDisconnected, setIsDisconnected] = useState(false);
 
   useEffect(() => {
     if (sessionId) {
@@ -67,6 +72,10 @@ function Shell() {
   const handleCloseTab = (tabId) => {
     console.log(`Close tab clicked for: ${tabId}`);
   };
+  
+  const handleRedirect = (url) => {
+    navigate(url);
+  };
 
   const handleCloseWindow = () => {
     navigate('/learn');
@@ -78,10 +87,24 @@ function Shell() {
 
   return (
     <div className="terminal-window-frame">
+      {isDisconnected && (
+        <div className="guide-overlay">
+          <div className="guide-box">
+            <div className="guide-content">
+              <p className="guide-text">Connection to the lab has been lost.</p>
+              <button onClick={() => navigate('/learn')} className="guide-next-button">
+                Back to Learn Page
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isGuiding && guideSteps.length > 0 && (
         <GuideOverlay 
           steps={guideSteps} 
-          onComplete={() => setIsGuiding(false)} 
+          onComplete={() => setIsGuiding(false)}
+          onRedirect={handleRedirect}
         />
       )}
 
@@ -114,6 +137,7 @@ function Shell() {
             sessionId={sessionId} 
             setGuideSteps={setGuideSteps}
             setIsGuiding={setIsGuiding}
+            setIsDisconnected={setIsDisconnected}
           />
         </div>
       </div>
