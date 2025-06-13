@@ -36,30 +36,23 @@ const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
     };
     
     const customKeyEventHandler = (e) => {
-        if (e.type !== "keydown") {
-            return true;
-        }
-        if (e.ctrlKey && e.shiftKey && termInstanceRef.current) {
-            const key = e.key.toLowerCase();
-            if (key === "v") {
-                navigator.clipboard.readText().then((toPaste) => {
-                    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
-                        websocketRef.current.send(JSON.stringify({ type: "input", input: toPaste }));
-                    }
-                });
-                return false; 
-            } else if (key === "c" || key === "x") {
-                const toCopy = termInstanceRef.current.getSelection();
-                if (toCopy) {
-                    navigator.clipboard.writeText(toCopy);
-                    termInstanceRef.current.focus();
-                }
-                return false;
-            }
-        }
-        return true;
-    };
-
+			if (e.type !== "keydown") {
+				return true;
+			}
+			if (e.ctrlKey && e.shiftKey && termInstanceRef.current) {
+				const key = e.key.toLowerCase();
+				
+				if (key === "c" || key === "x") {
+					const toCopy = termInstanceRef.current.getSelection();
+					if (toCopy) {
+						navigator.clipboard.writeText(toCopy);
+						termInstanceRef.current.focus();
+					}
+					return false;
+				}
+			}
+			return true;
+		};
 
     useEffect(() => {
         if (!terminalContainerRef.current || !sessionId) {
