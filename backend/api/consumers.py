@@ -53,31 +53,36 @@ class TerminalConsumer(AsyncWebsocketConsumer):
             rows = data.get('rows')
             if cols and rows and hasattr(self, 'exec_id'):
                 await asyncio.to_thread(self.docker_client.api.exec_resize, self.exec_id, height=rows, width=cols)
+        
+        elif message_type == 'input_with_command':
+            command_line = data.get('command', '')
+            
+            import re
+            prompt_pattern = r"^(.*[\$#]\s)"
+            command = re.sub(prompt_pattern, "", command_line).strip()
+
+            print(f"User submitted command: '{command}'")
+
+            if self.current_step_index < len(self.guide_steps):
+                next_step = self.guide_steps[self.current_step_index]
+                if command == next_step.get('trigger_command'):
+                    print(f"SUCCESS: Trigger command matched!")
+                    steps_to_send = []
+                    for i in range(self.current_step_index, len(self.guide_steps)):
+                        step = self.guide_steps[i]
+                        steps_to_send.append(step)
+                        self.current_step_index = i + 1
+                        is_last_step = (i + 1) >= len(self.guide_steps)
+                        if not is_last_step and self.guide_steps[i+1].get('trigger_command'):
+                            break
+                    await self.send(text_data=json.dumps({'type': 'show_guide', 'steps': steps_to_send}))
+            
+            input_data = data.get('input', '')
+            await asyncio.to_thread(self.pty_socket._sock.sendall, input_data.encode())
+
         elif message_type == 'input':
             input_data = data.get('input', '')
             await asyncio.to_thread(self.pty_socket._sock.sendall, input_data.encode())
-            if '\r' in input_data:
-                full_command = self.command_buffer.strip()
-                print(f"User submitted command: '{full_command}'")
-
-                if self.current_step_index < len(self.guide_steps):
-                    next_step = self.guide_steps[self.current_step_index]
-                    if full_command == next_step.get('trigger_command'):
-                        print(f"SUCCESS: Trigger command matched!")
-                        steps_to_send = []
-                        for i in range(self.current_step_index, len(self.guide_steps)):
-                            step = self.guide_steps[i]
-                            steps_to_send.append(step)
-                            self.current_step_index = i + 1
-                            is_last_step = (i + 1) >= len(self.guide_steps)
-                            if not is_last_step and self.guide_steps[i+1].get('trigger_command'):
-                                break
-                        await self.send(text_data=json.dumps({'type': 'show_guide', 'steps': steps_to_send}))
-                self.command_buffer = ""
-            elif input_data == '\x7f':
-                self.command_buffer = self.command_buffer[:-1]
-            else:
-                self.command_buffer += input_data
             
     @database_sync_to_async
     def get_lab_session(self):

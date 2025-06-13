@@ -158,7 +158,12 @@ const TerminalComponent = ({ sessionId, setGuideSteps, setIsGuiding }) => {
 
         const onDataDisposable = term.onData((data) => {
             if (websocketRef.current === ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ type: "input", input: data }));
+                if (data === '\r') {
+                    const commandLine = termInstanceRef.current.buffer.active.getLine(termInstanceRef.current.buffer.active.cursorY + termInstanceRef.current.buffer.active.baseY).translateToString(true);
+                    ws.send(JSON.stringify({ type: 'input_with_command', input: data, command: commandLine }));
+                } else {
+                    ws.send(JSON.stringify({ type: 'input', input: data }));
+                }
             }
         });
 
