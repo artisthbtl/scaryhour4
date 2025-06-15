@@ -4,7 +4,9 @@
 
 This project was inspired by the common hurdles many beginners face when starting in cybersecurity. The initial, complex setup of virtual machines and VPNs required by platforms like HackTheBox can be a significant barrier, not to mention the challenge of knowing where to even begin.
 
-Scary Hour 4 is a web-based cybersecurity learning platform built to eliminate those barriers. It provides an integrated environment where users get an in-browser Kali Linux terminal, pre-connected to a private, hackable machine. This allows beginners to get hands-on experience with real-world tools and techniques immediately, without any complex setup. To ensure no one gets lost, the platform also includes "Dexter," an interactive guide that walks users through the fundamentals of penetration testing, CTFs, and cybersecurity concepts.
+We introduce Scary Hour 4, a cybersecurity learning platform that lets beginners to get hands-on hacking experience without having to do all the complex setups, and also, helps them get through the initial learning curve we all been through when starting our PenTesting journey. Scary Hour 4 provides an integrated hacking lab that consists of 2 things:
+1. An in-browser Kali Linux terminal that has been pre-configured to the desired hackable machine, isolated for each user.
+2. An interactive guide that helps users get through every materials on the platform, it teaches them the fundamentals of CTF and Penetration Testing.
 
 ## Features
 
