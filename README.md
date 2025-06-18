@@ -35,14 +35,14 @@ Follow these steps to set up your development environment.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/artisthbtl/scaryhour4](https://github.com/artisthbtl/scaryhour4)
-    cd scaryhour4
+    git clone https://github.com/artisthbtl/scaryhour4
+    cd scaryhour4/
     ```
 
 2.  **Backend Dependencies (Python):**
     * Navigate to the backend directory:
         ```bash
-        cd backend
+        cd backend/
         ```
     * Create and activate a Python virtual environment:
         ```bash
@@ -57,8 +57,7 @@ Follow these steps to set up your development environment.
 3.  **Frontend Dependencies (Node.js):**
     * From the project root (`scaryhour4`), navigate to the frontend directory:
         ```bash
-        cd ../frontend 
-        # Or `cd frontend` if you are in the root
+        cd frontend/
         ```
     * Install Node.js packages:
         ```bash
@@ -75,7 +74,7 @@ Follow these steps to set up your development environment.
     * Build the hackable machine image:
         ```bash
         # Navigate to the specific machine's directory
-        cd docker/hackable_machine/
+        cd docker/machines/
         docker build -t hackable-machine-v1 .
         ```
 
