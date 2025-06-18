@@ -46,7 +46,7 @@ function Sidebar({ searchQuery, onSearch }) {
             const isLearnActiveOnRoot = val.link === "/learn" && window.location.pathname === "/";
             const isActive = window.location.pathname === val.link || isLearnActiveOnRoot;
 
-            const clickHandler = val.title === "Shell"
+            const clickHandler = val.title === "Terminal"
               ? handleGenericShell
               : () => navigate(val.link);
 
