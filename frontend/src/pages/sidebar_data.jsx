@@ -9,7 +9,7 @@ export const SidebarData = [
 		link: "/learn"
 	},
 	{
-		title: "Shell",
+		title: "Terminal",
 		icon: <FeaturedPlayListTwoToneIcon/>,
 		link: "/shell"
 	}
