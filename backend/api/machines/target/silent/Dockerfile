@@ -1,21 +1,15 @@
-FROM debian:bullseye-slim
+FROM ubuntu:22.04
 
-# Install vsftpd
-RUN apt-get update && \
-    apt-get install -y vsftpd && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y openssh-server
 
-# Create FTP user and directory
-RUN useradd -m ftpuser && \
-    mkdir -p /home/ftpuser/ftp/upload && \
-    chown -R ftpuser:ftpuser /home/ftpuser/ftp && \
-    chmod 777 /home/ftpuser/ftp/upload
+RUN mkdir /var/run/sshd
 
-# Configure vsftpd
-COPY vsftpd.conf /etc/vsftpd.conf
+RUN passwd -d root
 
-# Expose FTP ports
-EXPOSE 20 21
+RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/^#?PermitEmptyPasswords\s+.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/^#?UsePAM\s+.*/UsePAM no/' /etc/ssh/sshd_config
 
-# Start vsftpd
-CMD ["/usr/sbin/vsftpd", "/etc/vsftpd.conf"]
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
