@@ -116,6 +116,7 @@ class StartLabView(APIView):
                 stdin_open=True,
                 environment={'CONTAINER_USER': username},
                 network=lab_network.name if lab_network else None,
+                cap_add=['NET_RAW', 'NET_ADMIN']
             )
             session.kali_container_id = kali_container.id
             print(f"Spawned kali container: {kali_container.short_id}")
