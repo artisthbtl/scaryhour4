@@ -4,9 +4,9 @@
 
 This project was inspired by the common hurdles many beginners face when starting in cybersecurity. The initial, complex setup of virtual machines and VPNs required by platforms like HackTheBox can be a significant barrier, not to mention the challenge of knowing where to even begin.
 
-We introduce Scary Hour 4, a cybersecurity learning platform that lets beginners to get hands-on hacking experience without having to do all the complex setups, and also, helps them get through the initial learning curve we all been through when starting our PenTesting journey. Scary Hour 4 provides an integrated hacking lab that consists of 2 things:
+We introduce Scary Hour 4, a cybersecurity learning platform that lets beginners to get hands-on hacking experience without having to do all the complex setups, and also, helps them get through the initial learning curve we all been through when starting our penetration testing journey. Scary Hour 4 provides an integrated hacking lab that consists of 2 things:
 1. An in-browser Kali Linux terminal that has been pre-configured to the desired hackable machine, isolated for each user.
-2. An interactive guide that helps users get through every materials on the platform, it teaches them the fundamentals of CTF and Penetration Testing.
+2. An interactive guide that helps users get through every materials on the platform, it teaches them the fundamentals of Linux, CTF, and Penetration Testing.
 
 ## Features
 
@@ -23,92 +23,40 @@ We introduce Scary Hour 4, a cybersecurity learning platform that lets beginners
 
 Before you begin, ensure you have the following installed:
 
-* **Linux Environment:** Highly recommended for the full functionality, especially for Docker and pseudo-terminal (`pty`) operations.
-* **Git:** For cloning the repository.
-* **Python:** Version 3.8+ recommended.
-* **Node.js and npm:** For managing frontend dependencies (LTS version recommended).
-* **Docker:** Essential for running the isolated lab environments.
+* [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/install/): Essential for building and running the entire application stack.
 
-## Installation
+## How to Run This Project
 
-Follow these steps to set up your development environment.
+This project is fully containerized. Follow these steps to get the entire platform running in minutes.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/artisthbtl/scaryhour4
+    git clone [https://github.com/artisthbtl/scaryhour4](https://github.com/artisthbtl/scaryhour4)
     cd scaryhour4/
     ```
 
-2.  **Backend Dependencies (Python):**
-    * Navigate to the backend directory:
-        ```bash
-        cd backend/
-        ```
-    * Create and activate a Python virtual environment:
-        ```bash
-        python3 -m venv env
-        source .env/bin/activate
-        ```
-    * Install Python packages:
-        ```bash
-        pip install -r requirements.txt
-        ```
+2.  **Run the Application:**
+    Navigate to the project's root directory (the one containing `docker-compose.yml`) and run:
 
-3.  **Frontend Dependencies (Node.js):**
-    * From the project root (`scaryhour4`), navigate to the frontend directory:
-        ```bash
-        cd frontend/
-        ```
-    * Install Node.js packages:
-        ```bash
-        npm install
-        ```
+    ```bash
+    docker-compose up --build
+    ```
 
-4.  **Build Docker Images:**
-    This is a critical step. You must build the custom Docker images for the Kali terminal and the hackable machine.
-    * Build the Kali image (from the `scaryhour4/backend` directory):
-        ```bash
-        # Ensure you are in the 'backend' directory
-        docker build -t scaryhour-kali .
-        ```
-    * Build the hackable machine image:
-        ```bash
-        # Navigate to the specific machine's directory
-        cd docker/machines/
-        docker build -t hackable-machine-v1 .
-        ```
+    The application will be running at [http://localhost](http://localhost).
 
-## Setup & Running the Application
+3.  **Create an Admin Account:**
+    To add lab materials, you must first create a superuser.
 
-1.  **Prepare the Backend Database:**
-    * From the `backend` directory with your virtual environment activated, run the database migrations:
+    * Open a **new separate terminal**
+    * Still in the root directory, run:
         ```bash
-        python manage.py makemigrations
-        python manage.py migrate
+        docker-compose exec backend python manage.py createsuperuser
         ```
-    * Create a superuser account to access the Django Admin panel:
-        ```bash
-        python manage.py createsuperuser
-        ```
-    * Follow the prompts to create your admin user.
+    * Follow the prompts to create your username and password.
 
-2.  **Add Learning Content:**
-    * Start the backend server for now (`daphne -p 8000 backend.asgi:application`).
-    * Go to `http://127.0.0.1:8000/admin/` and log in.
-    * Use the admin panel to create a `Topic`, a `Material`, and `GuideStep` objects for that material.
+4.  **Add Learning Content:**
+    * Go to the admin panel: [http://localhost/admin](http://localhost/admin)
+    * Log in with the superuser credentials you just created.
+    * Add your `Topics`, `Materials`, and `GuideSteps` to populate the platform.
 
-3.  **Run the Servers:**
-    You will need three terminals running simultaneously.
-    * **Terminal 1: Start Docker:** Ensure your Docker daemon is running.
-    * **Terminal 2: Start Backend Server:** From the `backend` directory (with venv activated), run Daphne:
-        ```bash
-        daphne -p 8000 backend.asgi:application
-        ```
-    * **Terminal 3: Start Frontend Server:** From the `frontend` directory, run:
-        ```bash
-        npm start
-        ```
-    * Now you can access the application, likely at `http://localhost:3000`.
-
----
-A Project by **artisthbtl**
+If you've done creating a material, then that's it. Navigate to that material, then run 'ping target' to check if the terminal and the target machine is connected.

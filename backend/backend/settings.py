@@ -87,8 +87,12 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'scaryhourdb'),
+        'USER': os.environ.get('DB_USER', 'scaryhouruser'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': 5432,
+        'PASSWORD': os.environ.get('DB_PASS', 'supersecretpassword'),
     }
 }
 

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    command: >
+      sh -c "
+        echo 'Waiting for database...'
+        while ! nc -z db 5432; do
+          sleep 0.5
+        done;
+        echo 'Database is ready!'
+        
+        echo 'Running migrations...'
+        python manage.py migrate &&
+        
+        echo 'Starting server...'
+        daphne -b 0.0.0.0 -p 8000 backend.asgi:application
+      "
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=scaryhourdb
+      - DB_USER=scaryhouruser
+      - DB_PASS=supersecretpassword
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=scaryhourdb
+      - POSTGRES_USER=scaryhouruser
+      - POSTGRES_PASSWORD=supersecretpassword
+
+volumes:
+  postgres_data:
