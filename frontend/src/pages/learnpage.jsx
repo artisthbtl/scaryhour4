@@ -57,7 +57,7 @@ function LearnPage({ searchQuery, searchResults, isLoading, topics, tutorialStep
       <div className="title">
         <h1>hi, {username || "Loading..."}</h1>
       </div>
-      <div className="topic-box">
+      <div className="topic-box" style={tutorialStep === 3 ? { position: "relative", zIndex: 1001 } : {}}>
         {isLoading ? (
           <p>Searching...</p>
         ) : hasSearchQuery && dataToRender.length === 0 ? (

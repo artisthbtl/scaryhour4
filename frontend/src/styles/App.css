@@ -194,14 +194,13 @@ body {
 
 .highlight-element {
   position: relative;
-  z-index: 20 !important; 
+  z-index: 20 !important;
   background-color: #15071A;
   border-radius: 8px;
-  box-shadow: 0 0 0 4px #9FE215;
+  box-shadow: 0 0 0 4px #9FE215 !important;
   transition: all 0.3s ease;
   pointer-events: none;
 }
-
 .highlight-element.interactive {
   pointer-events: auto;
   cursor: pointer;
