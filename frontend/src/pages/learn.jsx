@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../styles/App.css";
 import Sidebar from "./sidebar";
 import LearnPage from "./learnpage";
-import api from "../api"; // Make sure api is available or use fetch
+import api from "../api";
 
 function Learn() {
   const [searchQuery, setSearchQuery] = useState("");

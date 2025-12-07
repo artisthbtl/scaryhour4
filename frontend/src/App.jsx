@@ -6,6 +6,7 @@ import ProtectedRoute from './ProtectedRoute'
 import NotFound from './pages/NotFound'
 import Shell from './pages/shell'
 import Challenge from './pages/challenge'
+import Landing from './pages/landing'
 
 function Logout() {
 	localStorage.clear()
@@ -27,12 +28,8 @@ function App() {
 				</ProtectedRoute>
 			}
 			/>
-			<Route path="/" element={
-				<ProtectedRoute>
-				<Learn />
-				</ProtectedRoute>
-			}
-			/>
+			<Route path="/" element={<Landing />} />
+			
 			<Route path="/challenge" element={
 				<ProtectedRoute>
 				<Challenge />
