@@ -5,8 +5,7 @@ import api from "../api";
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-// Receive searchQuery and onSearch as props from the parent (Learn.jsx)
-function Sidebar({ searchQuery, onSearch }) {
+function Sidebar({ searchQuery, onSearch, tutorialStep }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -29,9 +28,8 @@ function Sidebar({ searchQuery, onSearch }) {
   };
 
   return (
-    <div className="sidebar">
-      <div className="searchbox">
-        {/* The input is now controlled by the parent component */}
+    <div className="sidebar" style={tutorialStep > 0 ? { zIndex: 1001 } : {}}>
+      <div className={`searchbox ${tutorialStep === 1 ? 'highlight-element' : ''}`}>
         <input
           type="text"
           placeholder="Search"
@@ -46,6 +44,10 @@ function Sidebar({ searchQuery, onSearch }) {
             const isLearnActiveOnRoot = val.link === "/learn" && window.location.pathname === "/";
             const isActive = window.location.pathname === val.link || isLearnActiveOnRoot;
 
+            let isHighlighted = false;
+            if (tutorialStep === 2 && val.title === "Learn") isHighlighted = true;
+            if (tutorialStep === 4 && val.title === "Terminal") isHighlighted = true;
+
             const clickHandler = val.title === "Terminal"
               ? handleGenericShell
               : () => navigate(val.link);
@@ -54,7 +56,7 @@ function Sidebar({ searchQuery, onSearch }) {
               <li
                 key={key}
                 id={isActive ? "active" : ""}
-                className="row"
+                className={`row ${isHighlighted ? 'highlight-element' : ''}`}
                 onClick={clickHandler}
               >
                 <div id="icon">{val.icon}</div>

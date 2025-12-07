@@ -3,7 +3,7 @@ import "../styles/learnpage.css";
 import MaterialModal from "./material_modal";
 import { ACCESS_TOKEN } from "../constant";
 
-function LearnPage({ searchQuery, searchResults, isLoading, topics }) {
+function LearnPage({ searchQuery, searchResults, isLoading, topics, tutorialStep }) {
   const [showModal, setShowModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [username, setUsername] = useState("");
@@ -63,22 +63,26 @@ function LearnPage({ searchQuery, searchResults, isLoading, topics }) {
         ) : hasSearchQuery && dataToRender.length === 0 ? (
           <p>No results found for "{searchQuery}".</p>
         ) : (
-          dataToRender.map((topic) => (
+          dataToRender.map((topic, topicIndex) => (
             topic.materials && topic.materials.length > 0 && (
               <div key={topic.id} className="topic-section">
                 <div className="topic-name">
                   <h1>{topic.name}</h1>
                 </div>
                 <div className="grid-container">
-                  {topic.materials.map((material) => (
-                    <div
-                      className="material-box"
-                      key={material.id}
-                      onClick={() => handleMaterialClick(material)}
-                    >
-                      {material.name}
-                    </div>
-                  ))}
+                  {topic.materials.map((material, matIndex) => {
+                    const isHighlighted = tutorialStep === 3 && topicIndex === 0 && matIndex === 0;
+                    
+                    return (
+                      <div
+                        className={`material-box ${isHighlighted ? 'highlight-element interactive' : ''}`}
+                        key={material.id}
+                        onClick={() => handleMaterialClick(material)}
+                      >
+                        {material.name}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )
