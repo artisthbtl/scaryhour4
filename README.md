@@ -39,22 +39,33 @@ This project is fully containerized. Follow these steps to get the entire platfo
     Navigate to the project's root directory (the one containing `docker-compose.yml`) and run:
 
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
 
     The application will be running at [http://localhost](http://localhost).
 
-3.  **Create an Admin Account:**
+3. **Build the Kali and Target Image:**
+   * Navigate to **backend/api/machines/kali**, then run:
+        ```bash
+        docker compose build -t scaryhour-kali .
+        ```
+
+   * Also navigate to **backend/api/machines/target/silent**, then run:
+        ```bash
+        docker compose build -t hackable-machine-v1 .
+        ```
+
+4.  **Create an Admin Account:**
     To add lab materials, you must first create a superuser.
 
     * Open a **new separate terminal**
     * Still in the root directory, run:
         ```bash
-        docker-compose exec backend python manage.py createsuperuser
+        docker compose exec backend python manage.py createsuperuser
         ```
     * Follow the prompts to create your username and password.
 
-4.  **Add Learning Content:**
+5.  **Add Learning Content:**
     * Go to the admin panel: [http://localhost/admin](http://localhost/admin)
     * Log in with the superuser credentials you just created.
     * Add your `Topics`, `Materials`, and `GuideSteps` to populate the platform.
